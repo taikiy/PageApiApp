@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         // Launch OOBE page for the first launch
         boolean isFirstLaunch = settings.getBoolean("FIRST_LAUNCH", true);
         if (isFirstLaunch) {
-            setContentView(R.layout.);
+            setContentView(R.layout.activity_facebook_login);
         } else {
             setContentView(R.layout.activity_main);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
