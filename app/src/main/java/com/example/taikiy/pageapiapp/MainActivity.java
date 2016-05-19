@@ -1,5 +1,6 @@
 package com.example.taikiy.pageapiapp;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,29 +10,53 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.example.taikiy.pageapiapp.model.FacebookPage;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.FacebookRequestError;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphRequestAsyncTask;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PREFERENCES_FILE_NAME = "PreferencesFile";
+    private AccessTokenTracker accessTokenTracker;
+    private AccessToken accessToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Facebook telemetry
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
-
         // Load preferences
         SharedPreferences settings = getSharedPreferences(PREFERENCES_FILE_NAME, 0);
 
-        // Launch OOBE page for the first launch
-        boolean isFirstLaunch = settings.getBoolean("FIRST_LAUNCH", true);
-        if (isFirstLaunch) {
-            setContentView(R.layout.activity_facebook_login);
+        // Facebook magics
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
+        // If the access token is available already assign it.
+        accessToken = AccessToken.getCurrentAccessToken();
+
+        if (accessToken == null) {
+            startActivity(new Intent(MainActivity.this, FacebookLoginActivity.class));
         } else {
             setContentView(R.layout.activity_main);
+
+            updatePageListAsync();
+
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
 
@@ -44,6 +69,41 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void updatePageListAsync() {
+        GraphRequestAsyncTask task = new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me/accounts",
+                null,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        ArrayList<FacebookPage> list = new ArrayList<>();
+                        try {
+                            JSONObject json = response.getJSONObject();
+                            JSONArray data = json.getJSONArray("data");
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject page = data.getJSONObject(i);
+                                long id = page.getLong("id");
+                                String name = page.getString("name");
+                                String category = page.getString("category");
+                                String accessToken = page.getString("access_token");
+                                list.add(new FacebookPage(id, name, category, accessToken));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        TextView view = (TextView)findViewById(R.id.main_text_view);
+                        String names = "";
+                        for (FacebookPage page : list) {
+                            names += page.getName();
+                        }
+                        view.setText(names);
+                    }
+                }
+        ).executeAsync();
     }
 
     @Override
@@ -66,5 +126,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        accessTokenTracker.stopTracking();
     }
 }
