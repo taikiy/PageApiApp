@@ -1,4 +1,4 @@
-package com.example.taikiy.pageapiapp.model;
+package com.example.taikiy.pageapiapp;
 
 /**
  * Created by taikiy on 2016/05/21.

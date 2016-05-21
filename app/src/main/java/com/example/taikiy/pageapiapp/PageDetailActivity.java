@@ -1,18 +1,14 @@
 package com.example.taikiy.pageapiapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.taikiy.pageapiapp.model.FacebookPage;
 import com.example.taikiy.pageapiapp.model.FacebookPost;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -24,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PageDetailActivity extends AppCompatActivity {
@@ -37,10 +32,6 @@ public class PageDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Facebook magics
-        //FacebookSdk.sdkInitialize(this.getApplicationContext());
-        //callbackManager = CallbackManager.Factory.create();
 
         setContentView(R.layout.activity_page_detail);
 
@@ -71,7 +62,6 @@ public class PageDetailActivity extends AppCompatActivity {
     private void updateContentAsync() {
         //TODO: diff update
         facebookPostList = new ArrayList<>();
-
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 String.format("/%s/feed", facebookPageId),
@@ -100,10 +90,8 @@ public class PageDetailActivity extends AppCompatActivity {
 
     private void updateFacebookPostItems() {
         //TODO: cache and only reload when explicitly commanded
-        LinearLayout layout = (LinearLayout) findViewById(R.id.content_page_detail_linearlayout);
+        LinearLayout layout = (LinearLayout)findViewById(R.id.content_page_detail_linearlayout);
         for (FacebookPost post : facebookPostList) {
-            //LayoutInflater inflater =  (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            //View item = inflater.inflate(R.layout.post_item_tile, null);
             PostItemTile tile = new PostItemTile(this);
             tile.setContent(post);
             updatePostDetail(post, "is_published", (TextView)tile.findViewById(R.id.post_item_publish_status));
@@ -131,7 +119,6 @@ public class PageDetailActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        //TextView view = (TextView)tile.findViewById(R.id.
                         view.setText(post.getPublishStatus());
                     }
                 }
@@ -140,7 +127,6 @@ public class PageDetailActivity extends AppCompatActivity {
 
     private void updatePostInsight(final FacebookPost post,
                                    final String insightName,
-                                   //final PostItemTile tile) {
                                    final TextView view) {
         //TODO: permission check - "read_insights"
         new GraphRequest(
@@ -160,7 +146,6 @@ public class PageDetailActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        //TextView view = (TextView)tile.findViewById(R.id.post_item_view_count);
                         view.setText(String.valueOf(post.getViewCount()));
                     }
                 }

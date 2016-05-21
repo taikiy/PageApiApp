@@ -13,11 +13,6 @@ public class MainActivity extends AppCompatActivity {
         //TODO: Need to pop the history stack to disable "back" to this activity
         if (((PageApiApp)this.getApplication()).isLoggedIn()) {
             startActivity(new Intent(MainActivity.this, NavigationDrawerActivity.class));
-            /*
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            */
         } else {
             startActivity(new Intent(MainActivity.this, FacebookLoginActivity.class));
         }

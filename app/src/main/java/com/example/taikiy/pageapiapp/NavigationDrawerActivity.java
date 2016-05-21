@@ -14,7 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.taikiy.pageapiapp.model.Action;
 import com.example.taikiy.pageapiapp.model.FacebookPage;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -41,6 +40,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_navigation_drawer);
+        setTitle(R.string.app_name);
 
         updateNavigationMenuAsync();
 
@@ -113,7 +113,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
                             showConfirmationDialog("Revoke Permissions", response.toString(), new Action() {
                                 @Override
                                 public void invoke() {
-                                    LoginManager.getInstance().logOut();
                                     startActivity(new Intent(NavigationDrawerActivity.this, FacebookLoginActivity.class));
                                 }
                             });
@@ -152,7 +151,6 @@ public class NavigationDrawerActivity extends AppCompatActivity
                             action.invoke();
                     }
                 });
-        //alertDialogBuilder.setCancelable(true);
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }

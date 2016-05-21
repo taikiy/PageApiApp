@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import com.example.taikiy.pageapiapp.model.FacebookPost;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by taikiy on 2016/05/21.
  */
