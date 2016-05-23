@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.SharedPreferences;
 
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
@@ -24,6 +23,9 @@ public class PageApiApp extends Application {
         // Initialize the SDK before executing any other operations,
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
+
+        //TODO: remove in production
+        FacebookSdk.setIsDebugEnabled(true);
     }
 
     public boolean isLoggedIn() {
@@ -33,11 +35,22 @@ public class PageApiApp extends Application {
         return true;
     }
 
+    public boolean hasManagePermission() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        for (String permission : accessToken.getPermissions()) {
+            if (permission.equals("manage_pages")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean hasPublishPermission() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         for (String permission : accessToken.getPermissions()) {
-            if (permission.equals("publish_pages"))
+            if (permission.equals("publish_pages")) {
                 return true;
+            }
         }
         return false;
     }

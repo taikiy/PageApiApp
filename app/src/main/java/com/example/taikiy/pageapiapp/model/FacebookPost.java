@@ -48,15 +48,19 @@ public class FacebookPost {
         return this.viewCount;
     }
 
-    public String getPublishStatus() {
+    public boolean isPublished() {
         if (this.insights.containsKey("is_published")) {
             boolean isPublished = Boolean.parseBoolean(this.insights.get("is_published"));
-            if (isPublished) {
-                return "Published on ";
-            }
-            return "Will be published on ";
+            return isPublished;
         }
-        return "Draft";
+        return true;
+    }
+
+    public String getPublishStatus() {
+        if (this.isPublished())
+            return "Published on ";
+        else
+            return "Will be published on ";
     }
 
     public void setInsight(String key, String value) {

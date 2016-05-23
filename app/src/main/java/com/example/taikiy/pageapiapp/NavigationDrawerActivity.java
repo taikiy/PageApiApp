@@ -1,9 +1,8 @@
 package com.example.taikiy.pageapiapp;
 
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.SubMenu;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,9 +29,6 @@ import java.util.List;
 
 public class NavigationDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    //private static final String PREFERENCES_FILE_NAME = "PreferencesFile";
-    //private AccessToken accessToken;
-    //private CallbackManager callbackManager;
     private List<FacebookPage> facebookPageList;
 
     @Override
@@ -96,13 +92,14 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         if (id == R.id.nav_facebook_logout) {
             LoginManager.getInstance().logOut();
-            showConfirmationDialog("Logout", "Successfully logged out from Facebook.", new Action() {
+            Helper.showConfirmationDialog(this, "Logout", "Successfully logged out from Facebook.", new Action() {
                 @Override
                 public void invoke() {
                     startActivity(new Intent(NavigationDrawerActivity.this, FacebookLoginActivity.class));
                 }
             });
         } else if (id == R.id.nav_facebook_revoke_permissions) {
+            final Context context = this;
             new GraphRequest(
                     AccessToken.getCurrentAccessToken(),
                     "/me/permissions",
@@ -110,7 +107,7 @@ public class NavigationDrawerActivity extends AppCompatActivity
                     HttpMethod.DELETE,
                     new GraphRequest.Callback() {
                         public void onCompleted(GraphResponse response) {
-                            showConfirmationDialog("Revoke Permissions", response.toString(), new Action() {
+                            Helper.showConfirmationDialog(context, "Revoke Permissions", response.toString(), new Action() {
                                 @Override
                                 public void invoke() {
                                     startActivity(new Intent(NavigationDrawerActivity.this, FacebookLoginActivity.class));
@@ -139,24 +136,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
         return true;
     }
 
-    private void showConfirmationDialog(String title, String message, final Action action) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle(title);
-        alertDialogBuilder.setMessage(message);
-        alertDialogBuilder.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (action != null)
-                            action.invoke();
-                    }
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }
-
     private void updateNavigationMenuAsync() {
-        //TODO: check permission - "pages_show_list"
+        //TODO: check permission - "pages_show_list" or "manage_pages"
         facebookPageList = new ArrayList<>();
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
