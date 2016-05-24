@@ -47,29 +47,7 @@ public class PageDetailActivity extends AppCompatActivity {
         facebookPageAccessToken = getIntent().getStringExtra("pageAccessToken");
         setTitle(facebookPageName);
 
-        // Permission check
-        final PageApiApp app = (PageApiApp)this.getApplication();
-        if (!app.hasManagePermission()) {
-            callbackManager = CallbackManager.Factory.create();
-            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    //permission check - reading posts requires "manage_pages"
-                    if (app.hasManagePermission()) {
-                        updateContentAsync();
-                    }
-                }
-                @Override
-                public void onCancel() {}
-                @Override
-                public void onError(FacebookException error) {}
-            });
-            LoginManager.getInstance().logInWithPublishPermissions(this, Arrays.asList("manage_pages"));
-        }
-
-        if (app.hasManagePermission()) {
-            updateContentAsync();
-        }
+        //updateContent();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -89,12 +67,42 @@ public class PageDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        updateContent();
+    }
+
+    @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void updateContentAsync() {
+    private void updateContent() {
+        // Permission check
+        final PageApiApp app = (PageApiApp)this.getApplication();
+        if (!app.hasManagePermission()) {
+            callbackManager = CallbackManager.Factory.create();
+            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    //permission check - reading posts requires "manage_pages"
+                    if (app.hasManagePermission()) {
+                        getPostsAsync();
+                    }
+                }
+                @Override
+                public void onCancel() {}
+                @Override
+                public void onError(FacebookException error) {}
+            });
+            LoginManager.getInstance().logInWithPublishPermissions(this, Arrays.asList("manage_pages"));
+        } else {
+            getPostsAsync();
+        }
+    }
+
+    private void getPostsAsync() {
         //TODO: diff update
         facebookPostList = new ArrayList<>();
         Bundle bundle = new Bundle();
@@ -168,6 +176,7 @@ public class PageDetailActivity extends AppCompatActivity {
     private void updateFacebookPostItems() {
         //TODO: cache and only reload when explicitly commanded
         LinearLayout layout = (LinearLayout)findViewById(R.id.content_page_detail_linearlayout);
+        layout.removeAllViewsInLayout();
         for (FacebookPost post : facebookPostList) {
             PostItemTile tile = new PostItemTile(this);
             tile.setContent(post);

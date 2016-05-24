@@ -51,7 +51,7 @@ public class CreatePostActivity extends AppCompatActivity {
             LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
-                    //TODO: show dialog - publishing a post requires "publish_pages"
+                    //TODO: permission check - publishing a post requires "publish_pages"
                 }
                 @Override
                 public void onCancel() {}
@@ -120,9 +120,9 @@ public class CreatePostActivity extends AppCompatActivity {
                         Calendar maxTime = Calendar.getInstance();
                         minTime.add(Calendar.MINUTE, 10);
                         minTime.add(Calendar.MONTH, 6);
-                        if (timestamp.getTimeInMillis() < minTime.getTimeInMillis() + 5000 || // Add an extra 5 secs to be safe
+                        if (timestamp.getTimeInMillis() < minTime.getTimeInMillis() + 5000 || // Add extra 5 secs to be safe
                                 timestamp.getTimeInMillis() > maxTime.getTimeInMillis()) {
-                            //TODO: show error dialog
+                            //TODO: show error message
 
                         }
                     } catch (ParseException e) {
@@ -216,11 +216,12 @@ public class CreatePostActivity extends AppCompatActivity {
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
                         //TODO: Error handle
-                        EditText editText = (EditText)findViewById(R.id.create_post_message);
-                        editText.setText(response.toString());
+                        //EditText editText = (EditText)findViewById(R.id.create_post_message);
+                        //editText.setText(response.toString());
 
-                        //TODO: show a result dialog
+                        //TODO: show a result dialog?
                         //TODO: go back to details page
+                        finish();
                     }
                 }
         ).executeAsync();
