@@ -86,7 +86,8 @@
             android:id="@+id/create_post_publish_date_textview"
             android:layout_column="0"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:hint="1970/01/01" />
+            android:hint="1970/01/01"
+            android:onClick="onDateTextViewClicked" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -96,7 +97,8 @@
             android:id="@+id/create_post_publish_time_textview"
             android:layout_column="1"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:hint="12:00" />
+            android:hint="12:00"
+            android:onClick="onTimeTextViewClicked" />
     </GridLayout>
 
 </LinearLayout>

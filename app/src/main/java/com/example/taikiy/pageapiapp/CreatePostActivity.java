@@ -1,5 +1,7 @@
 package com.example.taikiy.pageapiapp;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,10 +11,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -29,7 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class CreatePostActivity extends AppCompatActivity {
     //TODO: implement serializable in FacebookPage and pass the instance
@@ -145,6 +148,46 @@ public class CreatePostActivity extends AppCompatActivity {
                     layout.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+
+    public void onDateTextViewClicked(View view) {
+        final TextView textView = (TextView)view;
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        final Calendar calendar = Calendar.getInstance();
+        try {
+            Date date = dateFormat.parse(textView.getText().toString());
+            calendar.setTime(date);
+        } catch (ParseException e) {
+            //TODO: error handle
+        }
+        DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendar.set(year, monthOfYear, dayOfMonth);
+                textView.setText(dateFormat.format(calendar.getTime()));
+            }
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
+    public void onTimeTextViewClicked(View view) {
+        final TextView textView = (TextView)view;
+        final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        final Calendar calendar = Calendar.getInstance();
+        try {
+            Date time = timeFormat.parse(textView.getText().toString());
+            calendar.setTime(time);
+        } catch (ParseException e) {
+            //TODO: error handle
+        }
+        TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        calendar.set(1970, 1, 1, hourOfDay, minute);
+                        textView.setText(timeFormat.format(calendar.getTime()));
+                    }
+                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+        dialog.show();
     }
 
     @Override
